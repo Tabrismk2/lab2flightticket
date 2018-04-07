@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.*;
 
 
+
 @Controller    // This means that this class is a Controller
 //@RequestMapping(path="/demo") // This means URL's start with /demo (after Application path)
 public class MainController {
@@ -23,7 +24,7 @@ public class MainController {
     private ReservationRepository reservationRepository;
 
     @GetMapping(path="/passenger") // Map ONLY GET Requests
-    public @ResponseBody String addNewUser (@RequestParam String firstname,
+    public @ResponseBody String addNewPassenger (@RequestParam String firstname,
                                             @RequestParam String lastname,
                                             @RequestParam int age,
                                             @RequestParam String gender,
@@ -31,21 +32,31 @@ public class MainController {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
-        Passenger n = new Passenger();
-        n.setFirstName(firstname);
-        n.setLastName(lastname);
-        n.setAge(age);
-        n.setGender(gender);
-        n.setPhone(phone);
+        Passenger passenger = new Passenger();
+        passenger.setFirstName(firstname);
+        passenger.setLastName(lastname);
+        passenger.setAge(age);
+        passenger.setGender(gender);
+        passenger.setPhone(phone);
 
-        passengerRepository.save(n);
+        passengerRepository.save(passenger);
         return "Saved";
     }
 
-    @GetMapping(path="/passenger/id")
-    public @ResponseBody
-    Optional<Passenger> getPassengerById(@RequestParam String id) {
-        // This returns a JSON or XML with the users
-        return passengerRepository.findPassengerById(id);
+    @GetMapping(path = "/reservation/add")
+    public @ResponseBody String addReservation(@RequestParam Long id){
+        Reservation reservation = new Reservation();
+        Passenger passenger = passengerRepository.findByPassengerId(id);
+        reservation.setPassenger(passenger);
+        reservationRepository.save(reservation);
+        for(int i = 0; i < 2; ++i){
+            //should add reservation to flight/repository && flight to passenger repository)
+        }
+
+        return "Saved";
     }
+
+
+
+
 }

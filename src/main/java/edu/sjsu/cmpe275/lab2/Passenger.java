@@ -9,7 +9,7 @@ public class Passenger {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "Passenger_ID")
-    private String id;
+    private Long passengerId;
 
     @Column(name = "First_Name")
     private String firstname;
@@ -34,19 +34,19 @@ public class Passenger {
     private List<Flight> flights = new LinkedList<>();
 
 
-    public String getId() {
-        return id;
+    public Long getPassengerId() {
+        return passengerId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPassengerId(Long passengerId) {
+        this.passengerId = passengerId;
     }
 
     public String getFirstName() {
         return firstname;
     }
 
-    public void setFirstName(String lastname) {
+    public void setFirstName(String firstname) {
         this.firstname = firstname;
     }
 
