@@ -12,7 +12,7 @@ public class Reservation {
     private String reservationNumber;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "Passenger_ID")
+    @JoinColumn(name = "id")
     private Passenger passengers;
 
     @Column(name = "Price")

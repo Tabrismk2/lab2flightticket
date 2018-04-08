@@ -40,7 +40,7 @@ public class Flight {
     @JoinTable(
             name = "Flight_Passenger",
             joinColumns = {@JoinColumn(name = "Flight_Number", referencedColumnName="Flight_Number")},
-            inverseJoinColumns = {@JoinColumn(name = "Passenger_ID", referencedColumnName = "Passenger_ID")}
+            inverseJoinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")}
     )
     private List<Passenger> passengers = new LinkedList<>();
 

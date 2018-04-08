@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 // CRUD refers Create, Read, Update, Delete
 
 public interface PassengerRepository extends CrudRepository<Passenger, Long> {
-    Passenger findByPassengerId(Long id);
+//    Passenger findByPassengerId(Long id);
 }

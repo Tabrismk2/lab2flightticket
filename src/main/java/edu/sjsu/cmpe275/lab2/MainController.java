@@ -1,16 +1,16 @@
 package edu.sjsu.cmpe275.lab2;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+
 import java.util.*;
+import java.sql.Date;
 
 
 
-@Controller    // This means that this class is a Controller
+
+@RestController    // This means that this class is a Controller
 //@RequestMapping(path="/demo") // This means URL's start with /demo (after Application path)
 public class MainController {
     @Autowired // This means to get the bean called userRepository
@@ -23,6 +23,12 @@ public class MainController {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private FlightPassengerRepository flightPassengerRepository;
+
+    @Autowired
+    private FlightReservationRepository flightReservationRepository;
+
     @GetMapping(path="/passenger") // Map ONLY GET Requests
     public @ResponseBody String addNewPassenger (@RequestParam String firstname,
                                             @RequestParam String lastname,
@@ -33,8 +39,8 @@ public class MainController {
         // @RequestParam means it is a parameter from the GET or POST request
 
         Passenger passenger = new Passenger();
-        passenger.setFirstName(firstname);
-        passenger.setLastName(lastname);
+        passenger.setFirstname(firstname);
+        passenger.setLastname(lastname);
         passenger.setAge(age);
         passenger.setGender(gender);
         passenger.setPhone(phone);
@@ -43,20 +49,21 @@ public class MainController {
         return "Saved";
     }
 
-    @GetMapping(path = "/reservation/add")
-    public @ResponseBody String addReservation(@RequestParam Long id){
-        Reservation reservation = new Reservation();
-        Passenger passenger = passengerRepository.findByPassengerId(id);
-        reservation.setPassenger(passenger);
-        reservationRepository.save(reservation);
-        for(int i = 0; i < 2; ++i){
-            //should add reservation to flight/repository && flight to passenger repository)
-        }
+//    @GetMapping(path = "/reservation/add")
+//    public @ResponseBody String addReservation(@RequestParam Long id){
+//        Reservation reservation = new Reservation();
+//        Passenger passenger = passengerRepository.findByPassengerId(id);
+//        reservation.setPassenger(passenger);
+//        reservationRepository.save(reservation);
+//        for(int i = 0; i < 2; ++i){
+//            //should add reservation to flight/repository && flight to passenger repository)
+//        }
+//
+//        return "Saved";
+//    }
 
-        return "Saved";
+    @GetMapping(path = "/passenger/all")
+    public @ResponseBody Iterable<Passenger> getAllPassenger(){
+        return passengerRepository.findAll();
     }
-
-
-
-
 }

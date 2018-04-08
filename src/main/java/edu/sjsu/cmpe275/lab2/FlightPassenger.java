@@ -6,15 +6,15 @@ import javax.persistence.*;
 @Table(name = "FLIGHT_PASSENGER")
 
 public class FlightPassenger {
-    @Id
-    @GeneratedValue
-    private long id;
+
+
 
     @Column(name = "Flight_Number")
     private String flightnumber;
 
-    @Column(name = "Passenger_ID")
-    private Long passengerId;
+    @Id
+    @Column(name = "id")
+    private Long id;
 
     public void setFlightNumber(String flightnumber){
         this.flightnumber = flightnumber;
@@ -25,10 +25,10 @@ public class FlightPassenger {
     }
 
     public void setPassengerID(Long id){
-        this.passengerId = passengerId;
+        this.id = id;
     }
 
     public Long getPassengerID(){
-        return passengerId;
+        return id;
     }
 }

@@ -1,5 +1,7 @@
 package edu.sjsu.cmpe275.lab2;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -7,24 +9,26 @@ import java.util.*;
 @Table(name = "PASSENGER")
 public class Passenger {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "Passenger_ID")
-    private Long passengerId;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @JsonProperty("id")
+    private Long id;
 
-    @Column(name = "First_Name")
+    @JsonProperty("firstname")
+    @Column(name = "First_Name", nullable = false)
     private String firstname;
 
-    @Column(name = "Last_Name")
+    @JsonProperty("lastname")
+    @Column(name = "Last_Name", nullable = false)
     private String lastname;
 
-    @Column(name = "Passenger_Age")
+    @Column(name = "Passenger_Age", nullable = false)
     private int age;
 
-    @Column(name = "Gender")
+    @Column(name = "Gender", nullable = false)
     private String gender;
 
 
-    @Column(name = "Passenger_Phone", unique = true)
+    @Column(name = "Passenger_Phone", nullable = false, unique = true)
     private String phone;//phone number must be unique
 
     @OneToMany(mappedBy = "passengers")
@@ -33,28 +37,27 @@ public class Passenger {
     @ManyToMany(mappedBy = "passengers")
     private List<Flight> flights = new LinkedList<>();
 
-
-    public Long getPassengerId() {
-        return passengerId;
+    public Long getId() {
+        return id;
     }
 
-    public void setPassengerId(Long passengerId) {
-        this.passengerId = passengerId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getFirstName() {
+    public String getFirstname() {
         return firstname;
     }
 
-    public void setFirstName(String firstname) {
+    public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
 
-    public String getLastName() {
+    public String getLastname() {
         return lastname;
     }
 
-    public void setLastName(String lastname) {
+    public void setLastname(String lastname) {
         this.lastname = lastname;
     }
 
@@ -73,6 +76,7 @@ public class Passenger {
     public void setGender(String gender) {
         this.gender = gender;
     }
+
     public String getPhone() {
         return phone;
     }
@@ -85,16 +89,80 @@ public class Passenger {
         return reservations;
     }
 
-    public void setReservations(List<Reservation> reservations){
+    public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
 
-    public List<Flight> getFlights(){
+    public List<Flight> getFlights() {
         return flights;
     }
 
-    public void getFlights(List<Flight> flights){
+    public void setFlights(List<Flight> flights) {
         this.flights = flights;
     }
+
+
+    //    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//
+//    public String getFirstName() {
+//        return firstname;
+//    }
+//
+//    public void setFirstName(String firstname) {
+//        this.firstname = firstname;
+//    }
+//
+//    public String getLastName() {
+//        return lastname;
+//    }
+//
+//    public void setLastName(String lastname) {
+//        this.lastname = lastname;
+//    }
+//
+//    public int getAge() {
+//        return age;
+//    }
+//
+//    public void setAge(int age) {
+//        this.age = age;
+//    }
+//
+//    public String getGender() {
+//        return gender;
+//    }
+//
+//    public void setGender(String gender) {
+//        this.gender = gender;
+//    }
+//    public String getPhone() {
+//        return phone;
+//    }
+//
+//    public void setPhone(String phone) {
+//        this.phone = phone;
+//    }
+//
+//    public List<Reservation> getReservations() {
+//        return reservations;
+//    }
+//
+//    public void setReservations(List<Reservation> reservations){
+//        this.reservations = reservations;
+//    }
+//
+//    public List<Flight> getFlights(){
+//        return flights;
+//    }
+//
+//    public void getFlights(List<Flight> flights){
+//        this.flights = flights;
+//    }
 
 }
