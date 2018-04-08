@@ -66,4 +66,17 @@ public class MainController {
     public @ResponseBody Iterable<Passenger> getAllPassenger(){
         return passengerRepository.findAll();
     }
+
+    @GetMapping(path = "/get")
+    public @ResponseBody Passenger findById(@RequestParam String id) {
+        Optional<Passenger> find_result = passengerRepository.findById(id);
+
+        try {
+            return find_result.get();
+        } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException("Passenger ID cannot be found.");
+        }
+    }
+
+
 }
