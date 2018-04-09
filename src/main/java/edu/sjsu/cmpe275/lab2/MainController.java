@@ -31,7 +31,7 @@ public class MainController {
     @Autowired
     private FlightReservationRepository flightReservationRepository;
 
-    @RequestMapping(path="/passenger")
+    @RequestMapping(path="/passenger", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity addNewPassenger (@RequestParam String firstname,
                                             @RequestParam String lastname,
                                             @RequestParam int age,
