@@ -11,7 +11,7 @@ public class Passenger {
     @Id
     @Column(name = "id", unique=true)
     @JsonProperty("id")
-    private String id;
+    private String passengerId;
 
     @JsonProperty("firstname")
     @Column(name = "First_Name", nullable = false)
@@ -39,15 +39,15 @@ public class Passenger {
 
     @PrePersist
     public void setUniqueId() {
-        this.id = UUID.randomUUID().toString();
+        this.passengerId = UUID.randomUUID().toString();
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPassengerId(String passengerId) {
+        this.passengerId = passengerId;
     }
 
-    public String getId() {
-        return id;
+    public String getPassengerId() {
+        return passengerId;
     }
 
 

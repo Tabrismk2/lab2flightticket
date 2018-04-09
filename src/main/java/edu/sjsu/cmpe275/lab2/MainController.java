@@ -61,6 +61,7 @@ public class MainController {
         Reservation reservation = new Reservation();
         Passenger passenger = passengerRepository.findById(id).get();
         reservation.setPassenger(passenger);
+        //reservation.setFlights(List<flight>);
         reservationRepository.save(reservation);
         int i = 0;
         do{
@@ -113,12 +114,12 @@ public class MainController {
         return passengerRepository.findAll();
     }
 
-    @GetMapping(path = "/passenger/{id}")
-    public @ResponseBody Passenger findById(@RequestParam String id) {
-        Optional<Passenger> find_result = passengerRepository.findById(id);
+    @RequestMapping(path = "/passenger/{id}", method = RequestMethod.GET)
+    public @ResponseBody ResponseEntity<Passenger> findById(@PathVariable("id") String passengerId) {
+        Passenger find_result = passengerRepository.findByPassengerId(passengerId);
 
         try {
-            return find_result.get();
+            return new ResponseEntity<Passenger>(find_result,HttpStatus.OK);
         } catch (NoSuchElementException e) {
             throw new IllegalArgumentException("Passenger ID cannot be found.");
         }
