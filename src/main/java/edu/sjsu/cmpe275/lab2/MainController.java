@@ -56,6 +56,20 @@ public class MainController {
         }
     }
 
+	@RequestMapping(value = "passenger/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody ResponseEntity deletePassenger (@PathVariable("id") String passengerId) {
+		Optional<Passenger> find_result = passengerRepository.findById(passengerId);
+
+		try {
+			Passenger passenger = find_result.get();
+			passengerRepository.delete(passenger);
+			return new ResponseEntity<Object>("Passenger with id XXX is deleted successfully", HttpStatus.OK);
+		} catch (NoSuchElementException e) {
+			ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Passenger with id XXX does not exist");
+			return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
+		}
+	}
+
 //    @GetMapping(path = "/reservation/add")
 //    public @ResponseBody String addReservation(@RequestParam Long id){
 //        Reservation reservation = new Reservation();
