@@ -3,6 +3,7 @@ package edu.sjsu.cmpe275.lab2;
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "RESERVATION")
@@ -20,6 +21,11 @@ public class Reservation {
 
     @ManyToMany(mappedBy = "reservations")
     private List<Flight> flights = new LinkedList<>();
+
+    @PrePersist
+    public void setUniqueReservationNumber(){
+        this.reservationNumber = UUID.randomUUID().toString();
+    }
 
     public String getReservationNumber() {
         return reservationNumber;

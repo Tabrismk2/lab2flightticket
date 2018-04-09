@@ -9,9 +9,9 @@ import java.util.*;
 @Table(name = "PASSENGER")
 public class Passenger {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "id", unique=true)
     @JsonProperty("id")
-    private Long id;
+    private String id;
 
     @JsonProperty("firstname")
     @Column(name = "First_Name", nullable = false)
@@ -37,13 +37,19 @@ public class Passenger {
     @ManyToMany(mappedBy = "passengers")
     private List<Flight> flights = new LinkedList<>();
 
-    public Long getId() {
+    @PrePersist
+    public void setUniqueId() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getFirstname() {
         return firstname;
@@ -100,69 +106,5 @@ public class Passenger {
     public void setFlights(List<Flight> flights) {
         this.flights = flights;
     }
-
-
-    //    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
-//
-//    public String getFirstName() {
-//        return firstname;
-//    }
-//
-//    public void setFirstName(String firstname) {
-//        this.firstname = firstname;
-//    }
-//
-//    public String getLastName() {
-//        return lastname;
-//    }
-//
-//    public void setLastName(String lastname) {
-//        this.lastname = lastname;
-//    }
-//
-//    public int getAge() {
-//        return age;
-//    }
-//
-//    public void setAge(int age) {
-//        this.age = age;
-//    }
-//
-//    public String getGender() {
-//        return gender;
-//    }
-//
-//    public void setGender(String gender) {
-//        this.gender = gender;
-//    }
-//    public String getPhone() {
-//        return phone;
-//    }
-//
-//    public void setPhone(String phone) {
-//        this.phone = phone;
-//    }
-//
-//    public List<Reservation> getReservations() {
-//        return reservations;
-//    }
-//
-//    public void setReservations(List<Reservation> reservations){
-//        this.reservations = reservations;
-//    }
-//
-//    public List<Flight> getFlights(){
-//        return flights;
-//    }
-//
-//    public void getFlights(List<Flight> flights){
-//        this.flights = flights;
-//    }
 
 }

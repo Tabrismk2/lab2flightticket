@@ -14,7 +14,7 @@ public class FlightPassenger {
 
     @Id
     @Column(name = "id")
-    private Long id;
+    private String id;
 
     public void setFlightNumber(String flightnumber){
         this.flightnumber = flightnumber;
@@ -24,11 +24,11 @@ public class FlightPassenger {
         return flightnumber;
     }
 
-    public void setPassengerID(Long id){
+    public void setPassengerID(String id){
         this.id = id;
     }
 
-    public Long getPassengerID(){
+    public String getPassengerID(){
         return id;
     }
 }

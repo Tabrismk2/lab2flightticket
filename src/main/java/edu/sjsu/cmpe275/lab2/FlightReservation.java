@@ -8,7 +8,7 @@ import javax.persistence.*;
 public class FlightReservation {
     @Id
     @GeneratedValue
-    private long id;
+    private String id;
 
     @Column(name = "Reservation_Number")
     private String reservationNumber;
