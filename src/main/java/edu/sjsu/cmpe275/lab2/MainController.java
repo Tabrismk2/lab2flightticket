@@ -1,6 +1,8 @@
 package edu.sjsu.cmpe275.lab2;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -29,8 +31,8 @@ public class MainController {
     @Autowired
     private FlightReservationRepository flightReservationRepository;
 
-    @GetMapping(path="/passenger") // Map ONLY GET Requests
-    public @ResponseBody String addNewPassenger (@RequestParam String firstname,
+    @RequestMapping(path="/passenger")
+    public @ResponseBody ResponseEntity addNewPassenger (@RequestParam String firstname,
                                             @RequestParam String lastname,
                                             @RequestParam int age,
                                             @RequestParam String gender,
@@ -45,8 +47,13 @@ public class MainController {
         passenger.setGender(gender);
         passenger.setPhone(phone);
 
-        passengerRepository.save(passenger);
-        return "Saved";
+        try {
+            passengerRepository.save(passenger);
+            return new ResponseEntity<Passenger>(passenger, HttpStatus.OK);
+        } catch (Exception e) {
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Another passenger with the same number already exists.");
+            return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+        }
     }
 
 //    @GetMapping(path = "/reservation/add")
