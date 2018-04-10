@@ -3,18 +3,18 @@ package edu.sjsu.cmpe275.lab2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
+import java.text.*;
 
-import java.text.NumberFormat;
-import java.util.*;
 import java.sql.Date;
-
-
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 
 @RestController    // This means that this class is a Controller
+@Transactional
 //@RequestMapping(path="/demo") // This means URL's start with /demo (after Application path)
 public class MainController {
     @Autowired // This means to get the bean called userRepository
@@ -138,7 +138,7 @@ public class MainController {
 //    }
 
     @RequestMapping(path="/flight/{flightNumber}", method = RequestMethod.POST) //Create/UpdateFlight API
-    public @ResponseBody ResponseEntity addNewFlight(@PathVariable String flightNumber,
+    public @ResponseBody ResponseEntity addOrUpdateFlight(@PathVariable String flightNumber,
                                                      @RequestParam double price,
                                                      @RequestParam String origin,
                                                      @RequestParam String to,
@@ -149,33 +149,56 @@ public class MainController {
                                                      @RequestParam String model,
                                                      @RequestParam String manufacturer,
                                                      @RequestParam int year){
-        Flight flight = new Flight();
+//        Flight flight = new Flight();
+//        flight.setFlightNumber(flightNumber);
+//        //flight.setArrivalTime(Date.valueOf("1990-03-09"));
+//        //flight.setDepartureTime(Date.valueOf("1990-03-09"));
+//        flight.setDescription(description);
+//        flight.setOrigin(origin);
+//        flight.setTo(to);
+//        flight.setPrice(price);
+//        Plane plane = new Plane();
+//        plane.setCapacity(capacity);
+//        plane.setManufacturer(manufacturer);
+//        plane.setModel(model);
+//        plane.setYear(year);
+//        flight.setPlane(plane);
 
-        flight.setFlightNumber(flightNumber);
-        flight.setArrivalTime(Date.valueOf("1990-03-09"));
-        flight.setDepartureTime(Date.valueOf("1990-03-09"));
-        flight.setDescription(description);
-        flight.setOrigin(origin);
-        flight.setTo(to);
-        flight.setPrice(price);
-        Plane plane = new Plane();
-        plane.setCapacity(capacity);
-        plane.setManufacturer(manufacturer);
-        plane.setModel(model);
-        plane.setYear(year);
-        flight.setPlane(plane);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH");
         try{
+            java.util.Date departure = dateFormat.parse(departureTime);
+            java.util.Date arrival = dateFormat.parse(arrivalTime);
+
+            Flight flight = new Flight();
+            flight.setFlightNumber(flightNumber);
+            flight.setArrivalTime(arrival);
+            flight.setDepartureTime(departure);
+            flight.setDescription(description);
+            flight.setOrigin(origin);
+            flight.setTo(to);
+            flight.setPrice(price);
+            Plane plane = new Plane();
+            plane.setCapacity(capacity);
+            plane.setManufacturer(manufacturer);
+            plane.setModel(model);
+            plane.setYear(year);
+            flight.setPlane(plane);
             flightRepository.save(flight);
             return new ResponseEntity<Flight>(flight, HttpStatus.OK);
         }catch(NumberFormatException e){
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Error 400");
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Format error");
             return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
 
         }catch(NoSuchElementException e){
-            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Error 404 ");
+            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Sorry, Flight Number does not exist");
             return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
+        }catch(ParseException e){
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Time Parse Error");
+            return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
         }
     }
+
+
 
     @RequestMapping(path = "/flight/{flightNumber}", method = RequestMethod.GET)
     public @ResponseBody ResponseEntity getFlightByFlightNumber(@PathVariable("flightNumber") String flightNumber){

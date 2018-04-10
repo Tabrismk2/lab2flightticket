@@ -1,9 +1,8 @@
 package edu.sjsu.cmpe275.lab2;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.util.LinkedList;
-import java.util.List;
+
+import java.util.*;
 
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "FLIGHT")
