@@ -9,8 +9,9 @@ import javax.transaction.Transactional;
 import java.text.*;
 
 import java.sql.Date;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+
+
 
 
 @RestController    // This means that this class is a Controller
@@ -82,7 +83,6 @@ public class MainController {
                                                          @RequestParam String phone){
         Optional<Passenger> find_result = passengerRepository.findById(passengerId);
         try{
-
                 Passenger passenger = find_result.get();
                 passenger.setFirstname(firstname);
                 passenger.setLastname(lastname);
@@ -138,6 +138,37 @@ public class MainController {
 //
 //        return "Saved";
 //    }
+    @RequestMapping(path="/reservation", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity addNewReservation(@RequestParam String passengerId,
+                                                          @RequestParam List<String> flightList){
+        Optional<Passenger> find_result = passengerRepository.findById(passengerId);
+
+        try {
+            Passenger passenger = find_result.get();
+            Reservation reservation = new Reservation();
+            List<Flight> flights = reservation.getFlights();
+            double price = 0.0;
+            for (Flight flight : flights) {
+                price += flight.getPrice();
+                flight.setSeatsLeft(flight.getPlane().getCapacity() - 1);
+            }
+
+            reservation.setPassenger(passenger);
+            reservation.setPrice(price);
+            reservationRepository.save(reservation);
+
+            FlightReservation flightReservation = new FlightReservation();
+
+            //List<Flight> newflightLists = new ArrayList<String>(Arrays.asList(newflightLists.split(",")));
+
+            return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
+
+        }catch(Exception e){
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Sorry there are some problem happened");
+            return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @RequestMapping(path="/flight/{flightNumber}", method = RequestMethod.POST) //Create/UpdateFlight API
     public @ResponseBody ResponseEntity addOrUpdateFlight(@PathVariable String flightNumber,
@@ -171,10 +202,19 @@ public class MainController {
             java.util.Date departure = dateFormat.parse(departureTime);
             java.util.Date arrival = dateFormat.parse(arrivalTime);
 
+
+
             Flight flight = new Flight();
-            flight.setFlightNumber(flightNumber);
+
             flight.setArrivalTime(arrival);
             flight.setDepartureTime(departure);
+
+            if((departure).compareTo(arrival)>0){
+                ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Departure time cannot earlier than arrival time");
+                return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+            }
+
+            flight.setFlightNumber(flightNumber);
             flight.setDescription(description);
             flight.setOrigin(origin);
             flight.setTo(to);
@@ -191,9 +231,6 @@ public class MainController {
             ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Format error");
             return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
 
-        }catch(NoSuchElementException e){
-            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Sorry, Flight Number does not exist");
-            return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
         }catch(ParseException e){
             ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Time Parse Error");
             return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
