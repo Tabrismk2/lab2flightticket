@@ -1,5 +1,7 @@
 package edu.sjsu.cmpe275.lab2;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -32,10 +34,12 @@ public class Passenger {
     private String phone;//phone number must be unique
 
     @OneToMany(mappedBy = "passengers")
-    private List<Reservation> reservations = new LinkedList<>();
+    @JsonProperty("reservations")
+    private List<Reservation> reservation = new LinkedList<>();
 
     @ManyToMany(mappedBy = "passengers")
-    private List<Flight> flights = new LinkedList<>();
+    @JsonProperty("flights")
+    private List<Flight> flight = new LinkedList<>();
 
     @PrePersist
     public void setUniqueId() {
@@ -49,7 +53,6 @@ public class Passenger {
     public String getPassengerId() {
         return passengerId;
     }
-
 
     public String getFirstname() {
         return firstname;
@@ -91,20 +94,34 @@ public class Passenger {
         this.phone = phone;
     }
 
-    public List<Reservation> getReservations() {
-        return reservations;
+    public List<Reservation> getReservation() {
+        return reservation;
     }
 
-    public void setReservations(List<Reservation> reservations) {
-        this.reservations = reservations;
+    @JsonProperty(value = "reservations")
+    public Map<String, List<Reservation>> getReservations() {
+        Map<String, List<Reservation>> map = new HashMap<>();
+        map.put("reservation", getReservation());
+        return map;
     }
 
-    public List<Flight> getFlights() {
-        return flights;
+    @JsonProperty(value = "flights")
+    public Map<String, List<Flight>> getFlights() {
+        Map<String, List<Flight>> map = new HashMap<>();
+        map.put("flight", getFlight());
+        return map;
     }
 
-    public void setFlights(List<Flight> flights) {
-        this.flights = flights;
+    public void setReservation(List<Reservation> reservations) {
+        this.reservation = reservations;
+    }
+
+    public List<Flight> getFlight() {
+        return flight;
+    }
+
+    public void setFlight(List<Flight> flights) {
+        this.flight = flights;
     }
 
 }

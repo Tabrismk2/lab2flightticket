@@ -50,7 +50,7 @@ public class Flight {
             inverseJoinColumns = {@JoinColumn(name = "Reservation_Number", referencedColumnName = "Reservation_Number")}
 
     )
-    private List<Reservation> reservations = new LinkedList<>();
+    private List<Reservation> reservation = new LinkedList<>();
 
 
     public String getFlightNumber() {
@@ -133,10 +133,10 @@ public class Flight {
         this.passengers = passengers;
     }
 
-    public List<Reservation> getReservations() { return reservations;}
+    public List<Reservation> getReservations() { return reservation;}
 
     public void setReservations(List<Reservation> reservations ) {
-        this.reservations = reservations;
+        this.reservation = reservations;
     }
 
 }
