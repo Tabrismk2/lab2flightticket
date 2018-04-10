@@ -19,8 +19,8 @@ public class Reservation {
     @Column(name = "Price")
     private double price;
 
-    @ManyToMany(mappedBy = "reservations")
-    private List<Flight> flights = new LinkedList<>();
+    @ManyToMany(mappedBy = "reservation")
+    private List<Flight> flight = new LinkedList<>();
 
     @PrePersist
     public void setUniqueReservationNumber(){
@@ -52,11 +52,11 @@ public class Reservation {
     }
 
     public List<Flight> getFlights() {
-        return flights;
+        return flight;
     }
 
     public void setFlights(List<Flight> flights) {
-        this.flights = flights;
+        this.flight = flights;
     }
 
 }
