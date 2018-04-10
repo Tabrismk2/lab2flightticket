@@ -64,7 +64,9 @@ public class MainController {
 
         try {
             Passenger passenger = find_result.get();
-            return new ResponseEntity<Passenger>(passenger, HttpStatus.OK);
+            Map<String, Passenger> jsonResult = new HashMap<>();
+            jsonResult.put("passenger", passenger);
+            return new ResponseEntity< Map<String, Passenger>>(jsonResult, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Passenger id cannot be found");
             return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
