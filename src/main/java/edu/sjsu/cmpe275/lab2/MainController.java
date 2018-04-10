@@ -137,20 +137,21 @@ public class MainController {
 //        return "Saved";
 //    }
 
-    @RequestMapping(path="/flight/flightnumber", method = RequestMethod.POST) //Create/UpdateFlight API
-    public @ResponseBody ResponseEntity addNewFlight(@RequestParam double price,
-                                             @RequestParam String origin,
-                                             @RequestParam String to,
-                                             @RequestParam String description,
-                                             @RequestParam int capacity,
-                                             @RequestParam String model,
-                                             @RequestParam String manufacturer,
-                                             @RequestParam int year){
+    @RequestMapping(path="/flight/{flightNumber}", method = RequestMethod.POST) //Create/UpdateFlight API
+    public @ResponseBody ResponseEntity addNewFlight(@PathVariable String flightNumber,
+                                                     @RequestParam double price,
+                                                     @RequestParam String origin,
+                                                     @RequestParam String to,
+                                                     @RequestParam String departureTime,
+                                                     @RequestParam String arrivalTime,
+                                                     @RequestParam String description,
+                                                     @RequestParam int capacity,
+                                                     @RequestParam String model,
+                                                     @RequestParam String manufacturer,
+                                                     @RequestParam int year){
         Flight flight = new Flight();
-        Random rand = new Random();
-        int randomNum = rand.nextInt(5000)+1;
 
-        flight.setFlightNumber(Integer.toString(randomNum));
+        flight.setFlightNumber(flightNumber);
         flight.setArrivalTime(Date.valueOf("1990-03-09"));
         flight.setDepartureTime(Date.valueOf("1990-03-09"));
         flight.setDescription(description);
