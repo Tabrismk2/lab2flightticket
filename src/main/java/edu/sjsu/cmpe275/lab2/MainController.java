@@ -115,52 +115,45 @@ public class MainController {
         }
     }
 
-//    @RequestMapping(path="/reservation", method = RequestMethod.POST) // Create Reservation API
-//    public @ResponseBody ResponseEntity addNewReservation(@RequestParam String passengerId
-//                                                          @RequestParam("flightLists") List<Flight> flightLists){
-//        Reservation reservation = new Reservation();
-//        Passenger passenger = passengerRepository.findById(id).get();
-//        reservation.setPassenger(passenger);
-//        //reservation.setFlights(List<flight>);
-//        reservationRepository.save(reservation);
-//        int i = 0;
-//        do{
-//            FlightReservation flightReservation = new FlightReservation();
-//            flightReservation.setFlightNumber(String.valueOf(i));
-//            flightReservation.setReservationNumber(reservation.getReservationNumber());
-//            flightReservationRepository.save(flightReservation);
-//            FlightPassenger flightPassenger = new FlightPassenger();
-//            flightPassenger.setFlightNumber(String.valueOf(i));
-//            flightPassenger.setPassengerID(id);
-//            flightPassengerRepository.save(flightPassenger);
-//        }
-//        while(++i < 2);
-//
-//        return "Saved";
-//    }
     @RequestMapping(path="/reservation", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity addNewReservation(@RequestParam String passengerId,
-                                                          @RequestParam List<String> flightList){
+                                                          @RequestParam String flightList){
         Optional<Passenger> find_result = passengerRepository.findById(passengerId);
 
         try {
             Passenger passenger = find_result.get();
             Reservation reservation = new Reservation();
             List<Flight> flights = reservation.getFlights();
-            double price = 0.0;
+            double payment = 0.0;
             for (Flight flight : flights) {
-                price += flight.getPrice();
-                flight.setSeatsLeft(flight.getPlane().getCapacity() - 1);
+                payment += flight.getPrice();
+                if(flight.getSeatsLeft() == 0){
+                    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,"Sorry, no seat left");
+                    return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+                }else {
+                    flight.setSeatsLeft(flight.getPlane().getCapacity() - 1);
+                }
             }
 
             reservation.setPassenger(passenger);
-            reservation.setPrice(price);
+            reservation.setPrice(payment);
             reservationRepository.save(reservation);
 
             FlightReservation flightReservation = new FlightReservation();
 
-            //List<Flight> newflightLists = new ArrayList<String>(Arrays.asList(newflightLists.split(",")));
+            String[] flightReservationList = flightList.split(",");
+            for(int i = 0; i < flightReservationList.length; i++){
+                flightReservation.setFlightNumber(flightReservationList[i]);
+                flightReservation.setReservationNumber(reservation.getReservationNumber());
+            }
+            flightReservationRepository.save(flightReservation);
 
+            FlightPassenger flightPassenger = new FlightPassenger();
+            for(int i = 0; i < flightReservationList.length; i++){
+                flightPassenger.setFlightNumber(flightReservationList[i]);
+                flightPassenger.setPassengerID(passengerId);
+            }
+            flightPassengerRepository.save(flightPassenger);
             return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
 
         }catch(Exception e){
@@ -217,27 +210,11 @@ public class MainController {
                                                      @RequestParam String model,
                                                      @RequestParam String manufacturer,
                                                      @RequestParam int year){
-//        Flight flight = new Flight();
-//        flight.setFlightNumber(flightNumber);
-//        //flight.setArrivalTime(Date.valueOf("1990-03-09"));
-//        //flight.setDepartureTime(Date.valueOf("1990-03-09"));
-//        flight.setDescription(description);
-//        flight.setOrigin(origin);
-//        flight.setTo(to);
-//        flight.setPrice(price);
-//        Plane plane = new Plane();
-//        plane.setCapacity(capacity);
-//        plane.setManufacturer(manufacturer);
-//        plane.setModel(model);
-//        plane.setYear(year);
-//        flight.setPlane(plane);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH");
         try{
             java.util.Date departure = dateFormat.parse(departureTime);
             java.util.Date arrival = dateFormat.parse(arrivalTime);
-
-
 
             Flight flight = new Flight();
 
@@ -263,11 +240,11 @@ public class MainController {
             flightRepository.save(flight);
             return new ResponseEntity<Flight>(flight, HttpStatus.OK);
         }catch(NumberFormatException e){
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Format error");
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Flight data format error");
             return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
 
         }catch(ParseException e){
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Time Parse Error");
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Flight time format Error");
             return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
         }
     }
@@ -292,8 +269,13 @@ public class MainController {
         Optional<Flight> find_result = flightRepository.findById(flightNumber);
         try {
             Flight flight = find_result.get();
-            flightRepository.delete(flight);
-            return new ResponseEntity<Object>("Flight with flightnumber XXX is deleted successfully", HttpStatus.OK);
+            if (flight.getReservations() !=null){
+                ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Sorry, the flight still has reservation, interrupt delete action");
+                return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+            }else {
+                flightRepository.delete(flight);
+                return new ResponseEntity<Object>("Flight with flightnumber XXX is deleted successfully", HttpStatus.OK);
+            }
         } catch (NoSuchElementException e) {
             ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Flight with id XXX does not exist");
             return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
