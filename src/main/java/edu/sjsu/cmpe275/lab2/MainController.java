@@ -169,6 +169,41 @@ public class MainController {
         }
     }
 
+    @RequestMapping(path = "/reservation/{reservationNumber}", method = RequestMethod.GET)
+    public @ResponseBody ResponseEntity getReservationByReservationNumber(@PathVariable("reservationNumber") String reservationNumber){
+        Optional<Reservation> find_result = reservationRepository.findById(reservationNumber);
+        try {
+            Reservation reservation = find_result.get();
+            Map<String, Reservation> jsonResult = new HashMap<>();
+            jsonResult.put("reservation", reservation);
+            return new ResponseEntity< Map<String, Reservation>>(jsonResult, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Reservation number cannot be found");
+            return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
+        }
+    }
+
+//    @RequestMapping(path = "/reservation", method = RequestMethod.GET)
+//    public @ResponseBody ResponseEntity getReservationByOtherInformation(@RequestParam String passengerId,
+//                                                                         @RequestParam String origin,
+//                                                                         @RequestParam String to,
+//                                                                         @RequestParam String flightNumber){
+//
+//    }
+
+    @RequestMapping(path = "/reservation/{reservationNumber}", method = RequestMethod.DELETE)
+    public @ResponseBody ResponseEntity deleteReservation(@PathVariable("reservationNumber") String reservationNumber){
+        Optional<Reservation> find_result = reservationRepository.findById(reservationNumber);
+        try{
+            Reservation reservation = find_result.get();
+            reservationRepository.delete(reservation);
+            return new ResponseEntity<Object>("Reservation with Number XXX is deleted successfully", HttpStatus.OK);
+        }catch(NoSuchElementException e) {
+            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Reservation Number cannot be found");
+            return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
+        }
+
+    }
 
     @RequestMapping(path="/flight/{flightNumber}", method = RequestMethod.POST) //Create/UpdateFlight API
     public @ResponseBody ResponseEntity addOrUpdateFlight(@PathVariable String flightNumber,
