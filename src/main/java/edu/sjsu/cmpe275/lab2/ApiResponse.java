@@ -1,29 +1,29 @@
 package edu.sjsu.cmpe275.lab2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.http.HttpStatus;
 
-public class ApiError {
+public class ApiResponse {
     private HttpStatus status;
     private String message;
 
-    public ApiError(HttpStatus status, String message) {
+    public ApiResponse(HttpStatus status, String message) {
         super();
         this.status = status;
         this.message = message;
     }
 
-    @JsonProperty("BadRequest")
-    public ObjectNode getBadRequest() {
+    @JsonProperty("Response")
+    public ObjectNode getResponse() {
         ObjectMapper mapper = new ObjectMapper();
 
-        ObjectNode errorNode = mapper.createObjectNode();
-        errorNode.put("code", this.status.value());
-        errorNode.put("msg", this.message);
+        ObjectNode node = mapper.createObjectNode();
+        node.put("code", this.status.value());
+        node.put("msg", this.message);
 
-        return errorNode;
+        return node;
     }
 
     public void setStatus(HttpStatus status) {

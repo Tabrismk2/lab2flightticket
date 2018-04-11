@@ -116,11 +116,14 @@ public class MainController {
         Optional<Passenger> find_result = passengerRepository.findById(passengerId);
 
         try {
+            String message = "Passenger with id " + passengerId + " is deleted successfully";
             Passenger passenger = find_result.get();
             passengerRepository.delete(passenger);
-            return new ResponseEntity<Object>("Passenger with id XXX is deleted successfully", HttpStatus.OK);
+            ApiResponse apiResponse = new ApiResponse(HttpStatus.OK, message);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NoSuchElementException e) {
-            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Passenger with id XXX does not exist");
+            String message = "Passenger with id " + passengerId + " does not exist";
+            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, message);
             return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
         }
     }
