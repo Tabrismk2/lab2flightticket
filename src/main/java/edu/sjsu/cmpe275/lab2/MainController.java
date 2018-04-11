@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import java.text.*;
 
-import java.sql.Date;
 import java.util.*;
 
 
@@ -183,6 +182,80 @@ public class MainController {
 //                                                                         @RequestParam String flightNumber){
 //
 //    }
+    @RequestMapping(path = "/reservation/{reservationNumber}", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity updateReservation(@PathVariable("reservationNumber") String reservationNumber,
+                                                          @RequestParam(required = false) List<String>flightsAdded,
+                                                          @RequestParam(required = false) List<String>flightsRemoved){
+        Optional<Reservation> find_result = reservationRepository.findById(reservationNumber);
+        try{
+            Reservation reservation = find_result.get();
+            List<Flight> flights = reservation.getFlights();
+
+            //Remove flights
+            List<ResponseEntity> removeList = new LinkedList<>();
+            List<String> reservationFlightList = new LinkedList<>();
+            Iterator<Flight> iterator = reservation.getFlights().iterator();
+            while (iterator.hasNext()){
+                Flight flight = iterator.next();
+                reservationFlightList.add(flight.getFlightNumber());
+            }
+            if(flightsRemoved != null){
+                for(String removeFlight: reservationFlightList){
+                    if (reservationFlightList.indexOf(removeFlight) == -1){
+                        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Error, this flight number does not exist in current reservation");
+                        return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+                    }else{
+                        removeList.add(getFlightByFlightNumber(removeFlight));
+                    }
+                }
+            }
+
+            //Add flights
+            iterator = reservation.getFlights().iterator();
+            while(iterator.hasNext() && null != flightsAdded){
+                Flight flight = iterator.next();
+                if(flightsAdded.indexOf(flight.getFlightNumber()) != -1){
+                    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Error, Flight number already exists");
+                    return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            List<ResponseEntity> addList = new LinkedList<>();
+            List<Flight> CurrentFlights = new LinkedList<>();
+            for(Flight flight: reservation.getFlights()){
+                if(null == flightsRemoved || flightsRemoved.indexOf(flight.getFlightNumber()) == -1){
+                    CurrentFlights.add(flight);
+                }
+            }
+            if(flightsAdded != null){
+                for(String addFlight : flightsAdded){
+                    addList.add(getFlightByFlightNumber(addFlight));
+                }
+            }
+
+            //CurrentFlights.addAll(addList);
+
+            return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
+        }catch(Exception e){
+            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Error, reservation number does not exist");
+            return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(path = "/reservation", method = RequestMethod.GET)
+    public @ResponseBody ResponseEntity searchReservation(@RequestParam(required = false) String passengerId,
+                                                          @RequestParam(required = false) String origin,
+                                                          @RequestParam(required = false) String to,
+                                                          @RequestParam(required = false) String flightNumber){
+        try{
+            Reservation reservation = new Reservation();
+
+            return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
+        }catch(Exception e){
+            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Error, reservation number does not exist");
+            return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
+        }
+    }
 
     @RequestMapping(path = "/reservation/{reservationNumber}", method = RequestMethod.DELETE)
     public @ResponseBody ResponseEntity deleteReservation(@PathVariable("reservationNumber") String reservationNumber){
