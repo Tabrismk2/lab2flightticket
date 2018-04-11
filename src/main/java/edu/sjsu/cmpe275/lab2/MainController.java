@@ -130,50 +130,49 @@ public class MainController {
 
     @RequestMapping(path="/reservation", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity addNewReservation(@RequestParam String passengerId,
-                                                          @RequestParam List<String> flightList){
+                                                          @RequestParam String flightList){
         Optional<Passenger> find_result = passengerRepository.findById(passengerId);
 
-//        try {
-//            Passenger passenger = find_result.get();
-//            Reservation reservation = new Reservation();
-//            List<Flight> flights = reservation.getFlights();
-//            double payment = 0.0;
-//            for (Flight flight : flights) {
-//                payment += flight.getPrice();
-//                if(flight.getSeatsLeft() == 0){
-//                    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,"Sorry, no seat left");
-//                    return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
-//                }else {
-//                    flight.setSeatsLeft(flight.getPlane().getCapacity() - 1);
-//                }
-//            }
-//
-//            reservation.setPassenger(passenger);
-//            reservation.setPrice(payment);
-//            reservationRepository.save(reservation);
-//
-//            FlightReservation flightReservation = new FlightReservation();
-//
-//            String[] flightReservationList = flightList.split(",");
-//            for(int i = 0; i < flightReservationList.length; i++){
-//                flightReservation.setFlightNumber(flightReservationList[i]);
-//                flightReservation.setReservationNumber(reservation.getReservationNumber());
-//            }
-//            flightReservationRepository.save(flightReservation);
-//
-//            FlightPassenger flightPassenger = new FlightPassenger();
-//            for(int i = 0; i < flightReservationList.length; i++){
-//                flightPassenger.setFlightNumber(flightReservationList[i]);
-//                flightPassenger.setPassengerID(passengerId);
-//            }
-//            flightPassengerRepository.save(flightPassenger);
-//            return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
-//
-//        }catch(Exception e){
-//            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Sorry there are some problem happened");
-//            return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
-//        }
-        return null;
+        try {
+            Passenger passenger = find_result.get();
+            Reservation reservation = new Reservation();
+            List<Flight> flights = reservation.getFlights();
+            double payment = 0.0;
+            for (Flight flight : flights) {
+                payment += flight.getPrice();
+                if(flight.getSeatsLeft() == 0){
+                    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,"Sorry, no seat left");
+                    return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+                }else {
+                    flight.setSeatsLeft(flight.getPlane().getCapacity() - 1);
+                }
+            }
+
+            reservation.setPassenger(passenger);
+            reservation.setPrice(payment);
+            reservationRepository.save(reservation);
+
+            FlightReservation flightReservation = new FlightReservation();
+
+            String[] flightReservationList = flightList.split(",");
+            for(int i = 0; i < flightReservationList.length; i++){
+                flightReservation.setFlightNumber(flightReservationList[i]);
+                flightReservation.setReservationNumber(reservation.getReservationNumber());
+            }
+            flightReservationRepository.save(flightReservation);
+
+            FlightPassenger flightPassenger = new FlightPassenger();
+            for(int i = 0; i < flightReservationList.length; i++){
+                flightPassenger.setFlightNumber(flightReservationList[i]);
+                flightPassenger.setPassengerID(passengerId);
+            }
+            flightPassengerRepository.save(flightPassenger);
+            return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
+
+        }catch(Exception e){
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Sorry there are some problem happened");
+            return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @RequestMapping(path = "/reservation/{reservationNumber}", method = RequestMethod.GET)
