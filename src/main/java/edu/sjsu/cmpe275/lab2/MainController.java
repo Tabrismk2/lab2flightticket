@@ -105,7 +105,8 @@ public class MainController {
                 ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "WRONG Parameter Type");
                 return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
             } catch(NoSuchElementException e){
-            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Passenger with id XXX does not exist");
+            String message = "Passenger with id " + passengerId + " does not exist";
+            ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, message);
             return new ResponseEntity<Object>(apiError, HttpStatus.NOT_FOUND);
         }
     }
