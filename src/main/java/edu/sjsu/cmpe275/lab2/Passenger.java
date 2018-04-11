@@ -3,11 +3,13 @@ package edu.sjsu.cmpe275.lab2;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity // This tells Hibernate to make a table out of this class
+@JsonPropertyOrder({"id", "firstname", "lastname", "age", "gender", "phone", "reservations"})
 @Table(name = "PASSENGER")
 public class Passenger {
     @Id
@@ -34,11 +36,11 @@ public class Passenger {
     private String phone;//phone number must be unique
 
     @OneToMany(mappedBy = "passengers")
-    @JsonProperty("reservations")
+    @JsonIgnore
     private List<Reservation> reservation = new LinkedList<>();
 
     @ManyToMany(mappedBy = "passengers")
-    @JsonProperty("flights")
+    @JsonIgnore
     private List<Flight> flight = new LinkedList<>();
 
     @PrePersist
@@ -105,12 +107,12 @@ public class Passenger {
         return map;
     }
 
-    @JsonProperty(value = "flights")
-    public Map<String, List<Flight>> getFlights() {
-        Map<String, List<Flight>> map = new HashMap<>();
-        map.put("flight", getFlight());
-        return map;
-    }
+//    @JsonProperty(value = "flights")
+//    public Map<String, List<Flight>> getFlights() {
+//        Map<String, List<Flight>> map = new HashMap<>();
+//        map.put("flight", getFlight());
+//        return map;
+//    }
 
     public void setReservation(List<Reservation> reservations) {
         this.reservation = reservations;

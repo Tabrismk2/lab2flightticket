@@ -49,6 +49,16 @@ public class MainController {
         passenger.setGender(gender);
         passenger.setPhone(phone);
 
+        Iterable<Passenger> find_result = passengerRepository.findAll();
+        Iterator<Passenger> passengers = find_result.iterator();
+
+        while (passengers.hasNext()) {
+            if (passengers.next().getPhone().equals(phone)) {
+                ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Another passenger with the same number already exists.");
+                return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+            }
+        }
+
         try {
             passengerRepository.save(passenger);
             return new ResponseEntity<Passenger>(passenger, HttpStatus.OK);
